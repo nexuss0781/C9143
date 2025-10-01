@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Abigiya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #1a020c;
+            --bg-gradient-end: #3c091a;
+            --primary-glow: #e60073;
+            --secondary-glow: #ff80ab;
+            --text-color: #ffe6f0;
+            --notes-text-color: #f0c0d6;
+            --card-bg: rgba(255, 230, 240, 0.05);
+            --card-border: rgba(255, 128, 171, 0.2);
+            --card-hover-border: rgba(230, 0, 115, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-dark); /* Fallback */
+            color: var(--text-color);
+            overflow-x: hidden;
+            cursor: default;
+        }
+        
+        #star-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        .mouse-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(230, 0, 115, 0.15) 0%, rgba(230, 0, 115, 0) 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: -1;
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+        
+        /* --- Hero Section 1: Name & Notes --- */
+        .hero {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .petal-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .petal {
+            position: absolute;
+            top: -20px;
+            font-size: 20px;
+            color: var(--secondary-glow);
+            user-select: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .content {
+            z-index: 1;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- STYLISH & CLEAR NAME UPDATE --- */
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(4rem, 10vw, 10rem);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            letter-spacing: clamp(1px, 0.5vw, 4px); /* Adds elegant spacing */
+            background: linear-gradient(90deg, var(--secondary-glow), var(--text-color), var(--primary-glow), var(--secondary-glow));
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 6s linear infinite; /* Uses the shimmer animation without glow */
+        }
+        
+        /* Keyframe for the shimmer effect without the blurry text-shadow */
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .love-notes-container {
+            position: relative;
+            max-height: 180px;
+            width: 90%;
+            max-width: 550px;
+            margin: 0 auto;
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
+            mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
+        }
+
+        .love-notes-list {
+            list-style: none;
+            animation: scroll-up 40s linear infinite;
+        }
+
+        .love-notes-list li {
+            color: var(--notes-text-color);
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            font-weight: 300;
+            line-height: 1.8;
+            padding: 2px 0;
+        }
+
+        @keyframes scroll-up {
+            from { transform: translateY(0); }
+            to { transform: translateY(-50%); }
+        }
+
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        .scroll-down a {
+            color: var(--secondary-glow);
+            font-size: 2.5rem;
+            text-decoration: none;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+        
+        /* --- Hero Section 2: Constellation --- */
+        .constellation-section {
+            min-height: 100vh;
+            width: 100vw;
+            padding: 100px 20px 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .constellation-section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            text-align: center;
+            margin-bottom: 60px;
+            color: var(--text-color);
+            text-shadow: 0 0 10px var(--secondary-glow);
+        }
+
+        .thoughts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .thought-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .thought-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--card-hover-border);
+            box-shadow: 0 10px 30px rgba(230, 0, 115, 0.2);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            color: var(--primary-glow);
+            margin-bottom: 15px;
+            animation: pulse-icon 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .thought-card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .thought-card p, .thought-card a {
+            font-weight: 300;
+            color: var(--notes-text-color);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .playlist-links a {
+            display: inline-block;
+            margin: 10px 8px 0;
+            text-decoration: none;
+            font-weight: 400;
+            color: var(--secondary-glow);
+            transition: color 0.3s, transform 0.3s;
+        }
+        .playlist-links a:hover {
+            color: var(--primary-glow);
+            transform: scale(1.1);
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2rem;
+            background-color: var(--secondary-glow);
+            animation: blink 0.7s infinite;
+            margin-left: 5px;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--bg-dark);
+            border: 1px solid var(--card-hover-border);
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content h3 {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--secondary-glow);
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .modal-content p {
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: var(--notes-text-color);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--text-color);
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        
+        footer {
+            padding: 50px 20px;
+            text-align: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--notes-text-color);
+            text-shadow: 0 0 5px var(--secondary-glow);
+        }
+
+    </style>
+</head>
+<body>
+    <canvas id="star-canvas"></canvas>
+    <div class="mouse-glow"></div>
+
+    <section class="hero">
+        <div class="petal-container" id="petal-container"></div>
+        <div class="content">
+            <h1>Abigiya</h1>
+            <div class="love-notes-container">
+                <ul class="love-notes-list" id="love-notes-list">
+                    <!-- Notes injected by JS -->
+                </ul>
+            </div>
+        </div>
+        <div class="scroll-down">
+            <a href="#constellation">&#8681;</a>
+        </div>
+    </section>
+
+    <section class="constellation-section" id="constellation">
+        <h2>A Constellation of My Thoughts for You</h2>
+        <div class="thoughts-grid">
+            
+            <div class="thought-card" id="promise-card">
+                <div class="card-icon">&#128150;</div>
+                <h3>A Promise</h3>
+                <p>My world is often one of logic and code, but you are the beautiful chaos that makes it all meaningful. I promise to always be your biggest fan, your staunchest supporter, and to make sure your world is always running perfectly.</p>
+            </div>
+
+            <div class="thought-card" id="memory-card">
+                <div class="card-icon">&#127776;</div>
+                <h3>A Memory</h3>
+                <p>Remember that one time... (Click to reveal)</p>
+            </div>
+
+            <div class="thought-card" id="letter-card">
+                <div class="card-icon">&#128140;</div>
+                <h3>A Letter For You</h3>
+                <p id="letter-content">Before you, my world was just lines of code. Now, it's a symphony. (Click to read)</p>
+            </div>
+
+            <div class="thought-card" id="playlist-card">
+                <div class="card-icon">&#127926;</div>
+                <h3>A Song For You</h3>
+                <!-- UPDATED: New message and link -->
+                <p>This song says everything I can't find the words for. Please open it, my love.</p>
+                <div class="playlist-links">
+                    <a href="https://youtu.be/Es7hLsV0QkU?si=cA2u0xEY6yaMc_xY" target="_blank">Click here to listen</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    
+    <div class="modal-overlay" id="memory-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal-btn">&times;</button>
+            <h3>Our First Laugh</h3>
+            <p>
+                <!-- YOU MUST CUSTOMIZE THIS MEMORY -->
+                I'll never forget the day we first truly laughed together, the one where we couldn't stop. In that moment, I knew my world had found its center. Every day since has been an attempt to hear that sound again.
+            </p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>With all my love, forever and always.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- Original functionality ---
+            const petalContainer = document.getElementById('petal-container');
+            const notesList = document.getElementById('love-notes-list');
+
+            const loveNotes = [
+                "You are the semicolon to my statements;",
+                "My world is a single-page app, and you are the only component.",
+                "if (you.isHappy()) { myWorld.set(true); }",
+                "You're the CSS to my HTML – you make everything beautiful.",
+                "My love for you has no bugs.",
+                "You've successfully deployed a commit to my heart.",
+                "You are my `!important` priority.",
+                "Our connection has zero latency.",
+                "const myLove = new Love(Abigiya); // never garbage collected",
+                "You turn my software into hardware.",
+                "Are you an API? Because I want to connect with you.",
+                "You are the loop that I never want to break.",
+                "With you, my life's code is perfectly refactored.",
+                "return myHeart.belongsTo(you);",
+                "You are the 'true' in all my boolean expressions.",
+                "Let's merge our branches and resolve all conflicts.",
+                "My feelings for you are un-cachable.",
+                "You're the function I'd call for a lifetime.",
+                "Our love is open-source and forever maintained."
+            ];
+            
+            const allNotes = [...loveNotes, ...loveNotes]; 
+            allNotes.forEach(note => {
+                const li = document.createElement('li');
+                li.textContent = note;
+                notesList.appendChild(li);
+            });
+
+            function createPetal() {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.innerHTML = '&#10047;';
+                const duration = Math.random() * 5 + 7;
+                petal.style.left = `${Math.random() * 100}vw`;
+                petal.style.animationDuration = `${duration}s`;
+                petal.style.opacity = Math.random() * 0.5 + 0.5;
+                petalContainer.appendChild(petal);
+                setTimeout(() => petal.remove(), duration * 1000);
+            }
+            setInterval(createPetal, 400);
+
+            const memoryCard = document.getElementById('memory-card');
+            const memoryModal = document.getElementById('memory-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            memoryCard.addEventListener('click', () => memoryModal.classList.add('active'));
+            closeModalBtn.addEventListener('click', () => memoryModal.classList.remove('active'));
+            memoryModal.addEventListener('click', (e) => {
+                if (e.target === memoryModal) memoryModal.classList.remove('active');
+            });
+
+            const letterCard = document.getElementById('letter-card');
+            const letterContent = document.getElementById('letter-content');
+            let isTyping = false;
+            
+            const letterText = `My Dearest Abigiya, if my heart were a program, you would be its source code. Every line, every function, every variable points to you. You've rewritten my reality, and I wouldn't have it any other way. I love you, infinitely.`;
+
+            function typeWriter(text, i) {
+                if (i < text.length) {
+                    letterContent.innerHTML = text.substring(0, i + 1) + '<span class="typing-cursor"></span>';
+                    setTimeout(() => typeWriter(text, i + 1), 60);
+                } else {
+                    letterContent.innerHTML = text;
+                    isTyping = false; // Allow re-typing
+                }
+            }
+            
+            letterCard.addEventListener('click', () => {
+                if (!isTyping) {
+                    isTyping = true;
+                    letterContent.innerHTML = '';
+                    typeWriter(letterText, 0);
+                }
+            });
+            
+            const mouseGlow = document.querySelector('.mouse-glow');
+            document.addEventListener('mousemove', (e) => {
+                mouseGlow.style.left = `${e.clientX}px`;
+                mouseGlow.style.top = `${e.clientY}px`;
+            });
+            
+            const canvas = document.getElementById('star-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let stars = [];
+            const numStars = 150;
+            const maxDist = 100;
+
+            function createStars() {
+                 stars = [];
+                 for(let i = 0; i < numStars; i++) {
+                    stars.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        radius: Math.random() * 1 + 1,
+                        vx: Math.random() * 0.4 - 0.2,
+                        vy: Math.random() * 0.4 - 0.2
+                    });
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim() + '33';
+                
+                stars.forEach(star => {
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    star.x += star.vx;
+                    star.y += star.vy;
+                    
+                    if (star.x < 0 || star.x > canvas.width) star.vx = -star.vx;
+                    if (star.y < 0 || star.y > canvas.height) star.vy = -star.vy;
+                });
+
+                ctx.beginPath();
+                for (let i = 0; i < stars.length; i++) {
+                    for (let j = i; j < stars.length; j++) {
+                        let iStar = stars[i];
+                        let jStar = stars[j];
+                        let dx = iStar.x - jStar.x;
+                        let dy = iStar.y - jStar.y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < maxDist) {
+                            ctx.moveTo(iStar.x, iStar.y);
+                            ctx.lineTo(jStar.x, jStar.y);
+                        }
+                    }
+                }
+                ctx.lineWidth = 0.05;
+                ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--secondary-glow').trim() + '44';
+                ctx.stroke();
+            }
+
+            function animate() {
+                draw();
+                requestAnimationFrame(animate);
+            }
+            
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                createStars();
+            });
+            
+            createStars();
+            animate();
+        });
+    </script>
+</body>
+</html>
